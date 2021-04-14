@@ -36,7 +36,7 @@ Combining multiple datasets that are images of humans. Special attention should 
 
 ### Proposal 3: Predicting river flows using historical flow and snowpack data
 
-The goal of this project would be to make predictions about future river flows and water levels using historical river flow data and current/recent snowpack data and upcoming weather forecasts. The area of flow prediction already has many experts dedicated to this field of study, but predictions are done in a more manual way using historical knowledge and reading upstream gauges to predict timing. These predictions could not only be useful for outdoor recreationalists, but could also be applied to property and lives in flood-prone areas. 
+The goal of this project would be to make predictions about future river flows and water levels using historical river flow data and current/recent snowpack data and upcoming weather forecasts. The area of flow prediction already has many experts dedicated to this field of study, but predictions are done in a more manual way using historical knowledge and reading upstream gauges to predict timing. These predictions could not only be useful for outdoor recreationalists, but could also be applied to save property and lives in flood-prone areas. 
 
 #### Techniques could include: 
 * Machine Learning to predict upcoming river flows (including a time-series component) 
