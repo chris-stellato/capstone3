@@ -1,0 +1,58 @@
+#------------------------------------------------- WARNING --------------------------------------------
+# 
+# The data you have obtained from this automated Natural Resources Conservation Service 
+# database are subject to revision regardless of indicated Quality Assurance level. 
+# Data are released on condition that neither the NRCS nor the United States Government 
+# may be held liable for any damages resulting from its use. 
+# 
+# Help and Tutorials: https://www.nrcs.usda.gov/wps/portal/wcc/home/dataAccessHelp/helpCenters/reportGeneratorHelp/
+# 
+# Support Contact: usdafpacbc@servicenowservices.com
+# 
+#------------------------------------------------------------------------------------------------------
+# 
+# Reporting Frequency: Daily
+# Date Range: Period of Record
+# Report Instantaneous Data As: Start of Day
+#
+# Data for the following site(s) are contained in this file:
+#
+#	SNOTEL 531: Hoosier Pass, CO
+# 
+# Data items provided in this file:
+#
+# Element Name                Value Type  Function Type  Function Duration             Base Data  Measurement Units   Sensor Depth  Element Code  Description                                                                                        
+# Snow Water Equivalent       Value       None           Instantaneous - Start of Day  N/A        Inches              N/A           WTEQ          Depth of water that would theoretically result if the entire snowpack were melted instantaneously  
+# Precipitation Accumulation  Value       None           Instantaneous - Start of Day  N/A        Inches              N/A           PREC          Water year accumulated precipitation                                                               
+# Air Temperature Maximum     Value       None           Day                           N/A        Degrees fahrenheit  N/A           TMAX          Maximum air temperature - sub-hourly sampling frequency                                            
+# Air Temperature Minimum     Value       None           Day                           N/A        Degrees fahrenheit  N/A           TMIN          Minimum air temperature - sub-hourly sampling frequency                                            
+# Air Temperature Average     Value       None           Day                           N/A        Degrees fahrenheit  N/A           TAVG          Average air temperature - sub-hourly sampling frequency                                            
+# Precipitation Increment     Value       None           Day                           N/A        Inches              N/A           PRCP          Total precipitation                                                                                
+# 
+# Quality Control flags included:
+#
+# Flag    Name                Description
+#  V      Valid               Validated Data
+#  N      No Profile          No profile for automated validation
+#  E      Edit                Edit, minor adjustment for sensor noise
+#  B      Back Estimate       Regression-based estimate for homogenizing collocated Snow Course and Snow Pillow data sets
+#  K      Estimate            Estimate
+#  X      External Estimate   External estimate
+#  S      Suspect             Suspect data
+# 
+# Quality Assurance flags included:
+#
+# Flag    Name                Description
+#  U      Unknown             Unknown
+#  R      Raw                 No Human Review
+#  P      Provisional         Preliminary Human Review
+#  A      Approved            Processing and Final Review Completed
+# 
+#------------------------------------------------------------------------------------------------------
+# 
+# Hoosier Pass (531) 
+# Colorado  SNOTEL Site - 11400 ft
+# Reporting Frequency: Daily; Date Range: Period of Record
+#
+# As of: Apr 19, 2021 3:10:53 PM GMT-08:00
+#
