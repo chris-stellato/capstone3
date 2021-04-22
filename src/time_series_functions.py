@@ -4,12 +4,21 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import signal, stats
+import seaborn as sns
+import statsmodels.api as sm
+from math import sqrt
+
+from prophet import Prophet
+
 
 import statsmodels.api as sm
 from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.arima_process import ArmaProcess
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+
 from sklearn.preprocessing import power_transform
+from sklearn.metrics import mean_squared_error
+
 
 ## some datetime conversion warning
 # from pandas.plotting import register_matplotlib_converters
@@ -18,6 +27,31 @@ from sklearn.preprocessing import power_transform
 
 plt.style.use('seaborn')
 
+def prophet_add_regressors(col_list):
+    '''adds additional regressors to Prophet model'''
+    model = Prophet(interval_width=0.95)
+    for col in col_list: 
+        model.add_regressor(col)
+    return model
+
+def split_fit_predict(model, df, train_low, train_upper, test_low, test_upper):
+    X_train = df[train_low:train_upper]
+    X_test = df[test_low:test_upper]
+    model = model.fit(X_train)
+    pred = model.predict(X_test.drop(columns='y'))
+    rmse = sqrt(mean_squared_error(X_test['y'], pred['yhat']))
+    print (f'RMSE {df.columns} = {rmse}')
+    return pred
+
+
+def csv_with_datetime(filepath, col_name): 
+    '''reads in a csv and converts specified column to datetime format and lablel ds
+    and sets index to datetime'''
+    df = pd.read_csv(filepath)
+    df['ds'] = pd.to_datetime(df[col_name])
+    df.set_index(pd.to_datetime(df[col_name]), inplace=True)
+    df.drop(col_name, axis=1, inplace=True)
+    return df
 
 def plot_trend_data(ax, name, series):
     ax.plot(series.index.date, series)
