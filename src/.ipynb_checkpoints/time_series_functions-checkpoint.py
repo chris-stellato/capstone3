@@ -53,6 +53,26 @@ def csv_with_datetime(filepath, col_name):
     df.drop(col_name, axis=1, inplace=True)
     return df
 
+
+
+
+def split_and_windowize(data, n_prev, n_test=365):
+    n_predictions = len(data) - 2*n_prev
+    
+    n_train = n_predictions - n_test   
+    
+    x_train, y_train = windowize_data(data[:n_train], n_prev)
+    x_test, y_test = windowize_data(data[n_train:], n_prev)
+    
+    return x_train, x_test, y_train, y_test
+
+def windowize_data(data, n_prev):
+    n_predictions = len(data) - n_prev
+    y = data[n_prev:]
+    indices = np.arange(n_prev) + np.arange(n_predictions)[:, None]
+    x = data[indices, None]
+    return x, y
+
 def plot_trend_data(ax, name, series):
     ax.plot(series.index.date, series)
     ax.set_title("Trend For {}".format(name))
