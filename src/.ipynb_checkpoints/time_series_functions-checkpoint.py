@@ -49,9 +49,18 @@ def csv_with_datetime(filepath, col_name):
     and sets index to datetime'''
     df = pd.read_csv(filepath)
     df['ds'] = pd.to_datetime(df[col_name])
-    df.set_index(pd.to_datetime(df[col_name]), inplace=True)
-    df.drop(col_name, axis=1, inplace=True)
+    df.set_index(pd.to_datetime(df[col_name]), drop=False, inplace=True)
+#     df.drop(col_name, axis=1, inplace=True)
     return df
+
+def windowize_data(data, n_prev, y_var='y', predict_steps=365):
+    n_predictions = len(data) - n_prev
+    y = data[y_var].iloc[n_prev:].values
+    y_indices = np.arange(predict_steps) + np.arange(len(y) - predict_steps+1)[:, None]
+    y = y[y_indices]
+    x_indices = np.arange(n_prev) + np.arange(n_predictions- predict_steps+1)[:, None]
+    x = data.values[x_indices]
+    return x, y
 
 
 
@@ -65,13 +74,6 @@ def split_and_windowize(data, n_prev, n_test=365):
     x_test, y_test = windowize_data(data[n_train:], n_prev)
     
     return x_train, x_test, y_train, y_test
-
-def windowize_data(data, n_prev):
-    n_predictions = len(data) - n_prev
-    y = data[n_prev:]
-    indices = np.arange(n_prev) + np.arange(n_predictions)[:, None]
-    x = data[indices, None]
-    return x, y
 
 def plot_trend_data(ax, name, series):
     ax.plot(series.index.date, series)
