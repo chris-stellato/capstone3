@@ -62,6 +62,157 @@ def windowize_data(data, n_prev, y_var='y', predict_steps=365):
     x = data.values[x_indices]
     return x, y
 
+def year_eval_lstm(model, pred_year, master_df):
+    df = master_df.copy()
+    
+    #making desired year last year in sample data
+    samp_df = df[:pred_year]
+
+    #trimming sample data to 6000 records total
+    samp_df = samp_df.iloc[-6000:]
+
+    # convert datetime column to continuous integer
+    samp_df['ds'] = pd.to_datetime(df['ds']).sub(pd.Timestamp(df['ds'].iloc[0])).dt.days
+    
+    #don't pass in historical y to model
+    samp_df.drop('hist_avg_y', axis=1, inplace=True)
+    
+    # scale entire dataframe except y column 
+    scale_df = samp_df.copy()
+    for column in scale_df.columns:
+      if column != 'y':
+        scaler = StandardScaler()
+        # print (scale_df[column].values.shape)
+        holder = scaler.fit_transform(scale_df[column].values.reshape(-1,1))
+        scale_df[column] = holder.reshape(len(scale_df),)
+        
+    #test size depends if year is leap year or not
+    test_size = 365
+    if int(pred_year)%4 == 0:
+        test_size = 366
+        
+    #these variables can't be changed without retraining models used in this project
+    n_prev = 400 #model was trained on this input shape
+    predict_steps = 30 #model was trained on this output shape
+    
+    #utilizes windowize_data function
+    X, y = windowize_data(scale_df, n_prev, 'y', predict_steps)
+    X_test = X[-test_size:]
+    y_test = y[-test_size:]
+    
+    #use model to make predictions and make 0 the lower limit of predictions
+    y_pred = model.predict(X_test)
+    y_pred[y_pred<0] = 0
+
+    
+    #grab predictions at 1-day, 14-days, and 30-days out for each day of the year
+    day_1_pred = y_pred[:,:1]          
+    day_14_pred = y_pred[:,13:14]
+    day_30_pred = y_pred[:,-1:]
+    
+    #collect and print rmse for 1-day, 14-days, and 30-days prediction sets
+    day_1_rmse  = sqrt(mean_squared_error(y_test[:,:1], day_1_pred))
+    day_14_rmse = sqrt(mean_squared_error(y_test[:,13:14], day_14_pred))
+    day_30_rmse = sqrt(mean_squared_error(y_test[:,-1:], day_30_pred))
+    print(f'For prediction year {pred_year}:')
+    print(f'1-Day RMSE = {day_1_rmse}')
+    print(f'14-Day RMSE = {day_14_rmse}')
+    print(f'30-Day RMSE = {day_30_rmse}')
+    
+    #collect historical average set, calculate rmse over actuals, and compare lift over historical average
+    hist_avg_set = df[pred_year]['hist_avg_y']
+    hist_avg_rmse = sqrt(mean_squared_error(y_test[:,:1], hist_avg_set))
+    
+    day_1_lift = 1-(day_1_rmse/hist_avg_rmse)
+    day_14_lift = 1-(day_14_rmse/hist_avg_rmse)
+    day_30_lift = 1-(day_30_rmse/hist_avg_rmse)
+    
+    #print lifts over historical average
+    print(f'Historical average vs. actuals RMSE: {hist_avg_rmse}')
+    print('\n')
+    print('Model lift over historical average method')
+    print(f'1-Day: {day_1_lift*100}%')
+    print(f'14-Day: {day_14_lift*100}%')
+    print(f'30-Day: {day_30_lift*100}%')
+    
+    return day_1_rmse, day_14_rmse, day_30_rmse, hist_avg_rmse, day_1_lift, day_14_lift, day_30_lift
+
+
+
+
+def year_graph_lstm(model, model_name_string, pred_year, master_df):
+    df = master_df.copy()
+    
+    #making desired year last year in sample data
+    samp_df = df[:pred_year].copy()
+
+    #trimming sample data to 6000 records total
+    samp_df = samp_df.iloc[-6000:]
+
+    # convert datetime column to continuous integer
+    samp_df['ds'] = pd.to_datetime(df['ds']).sub(pd.Timestamp(df['ds'].iloc[0])).dt.days
+    
+    #don't pass in historical y to model
+    samp_df.drop('hist_avg_y', axis=1, inplace=True)
+    
+    # scale entire dataframe except y column 
+    scale_df = samp_df.copy()
+    for column in scale_df.columns:
+      if column != 'y':
+        scaler = StandardScaler()
+        # print (scale_df[column].values.shape)
+        holder = scaler.fit_transform(scale_df[column].values.reshape(-1,1))
+        scale_df[column] = holder.reshape(len(scale_df),)
+        
+    #test size depends if year is leap year or not
+    test_size = 365
+    if int(pred_year)%4 == 0:
+        test_size = 366
+        
+    #these variables can't be changed without retraining models used in this project
+    n_prev = 400 #model was trained on this input shape
+    predict_steps = 30 #model was trained on this output shape
+    
+    #utilizes windowize_data function
+    X, y = windowize_data(scale_df, n_prev, 'y', predict_steps)
+    X_test = X[-test_size:]
+    y_test = y[-test_size:]
+    
+    #use model to make predictions and make 0 the lower limit of predictions
+    y_pred = model.predict(X_test)
+    y_pred[y_pred<0] = 0
+#     print(y_pred)
+
+    
+    #grab predictions at 1-day, 14-days, and 30-days out for each day of the year
+    day_1_pred = y_pred[:,:1]
+    day_14_pred = y_pred[:,13:14]
+    day_30_pred = y_pred[:,-1:]
+#     print(df[pred_year].index[30:])
+  
+#     plot actual, hist_avg, and 1-day, 14-day, and 30-day predictions
+    plt.figure(figsize=(30,10))
+    plt.plot(df[pred_year].index, df[pred_year]['y'],label='actual', linewidth=5);
+    plt.plot(df[pred_year].index, df[pred_year]['hist_avg_y'],label='historical average', linewidth=3, color='green', alpha=0.8, linestyle='dashed')
+    plt.plot(df[pred_year].index[:-30], day_1_pred[30:], label='1-day forecast', linewidth=3, color='purple', alpha=0.3)
+    plt.plot(df[pred_year].index[:-14], day_14_pred[14:], label='14-day forecast', linewidth=5, color='red')
+    plt.plot(df[pred_year].index, day_30_pred, label='30-day forecast', linewidth=5, color='orange', alpha=0.4)
+    #formatting
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.ylabel('Streamflow CFS', fontsize=30)
+    plt.legend(prop={"size":30})
+    plt.savefig(f'graphs/{model_name_string}_yearly_{pred_year}.jpg')
+    plt.show()
+    
+    pass
+
+
+
+
+
+
+
 
 
 
