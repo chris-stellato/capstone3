@@ -34,14 +34,26 @@ def prophet_add_regressors(col_list):
         model.add_regressor(col)
     return model
 
-def split_fit_predict(model, df, train_low, train_upper, test_low, test_upper):
+def split_fit_predict(df, test_low, test_upper):
+    model = prophet_add_regressors(['avg_temp', 'precip_accum', 'swe'])
+    working_df = df.copy()
+    working_df = working_df[:test_upper]
+    X_train = df[-6000:]
+    X_test = df[test_low:test_upper]
+    model = model.fit(X_train)
+    pred = model.predict(X_test.drop(columns=['y', 'hist_avg_y']))
+    rmse = sqrt(mean_squared_error(X_test['y'], pred['yhat']))
+    print (f'RMSE {test_upper} = {rmse}')
+    return pred, rmse
+
+def archive_split_fit_predict(model, df, train_low, train_upper, test_low, test_upper):
     X_train = df[train_low:train_upper]
     X_test = df[test_low:test_upper]
     model = model.fit(X_train)
     pred = model.predict(X_test.drop(columns='y'))
     rmse = sqrt(mean_squared_error(X_test['y'], pred['yhat']))
     print (f'RMSE {df.columns} = {rmse}')
-    return pred
+    return pred, rmse
 
 
 def csv_with_datetime(filepath, col_name): 
