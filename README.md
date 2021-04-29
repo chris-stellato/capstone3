@@ -2,7 +2,7 @@
 
 #### Watch the project presentation on youtube: 
 
-[![video presentation](https://img.youtube.com/vi/SKWMQL9uw2U/0.jpg)](https://www.youtube.com/watch?v=SKWMQL9uw2U)
+[![video presentation](https://github.com/chris-stellato/capstone3/blob/main/notebooks/youtube_thumbnail.jpg)](https://www.youtube.com/watch?v=SKWMQL9uw2U)
 
 
 
