@@ -6,9 +6,11 @@
 
 
 #
-### Presentation Slides: 
+### Presentation: 
+* download the full presentation here: 
+* https://github.com/chris-stellato/capstone3/blob/main/chris_stellato_flow_forecasting_presentation.pdf
 
-#
+
 
 ![slide 1](data/presentation_images/presentation_images.001.jpeg)
 ![slide 2](data/presentation_images/presentation_images.002.jpeg)
